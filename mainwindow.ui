@@ -179,7 +179,7 @@
      <widget class="QScrollArea" name="scrollArea">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>0</x>
         <y>110</y>
         <width>781</width>
         <height>191</height>
@@ -200,10 +200,10 @@
        <widget class="PlotWidget" name="Channel1_2" native="true">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>761</width>
-          <height>171</height>
+          <x>-1</x>
+          <y>-1</y>
+          <width>781</width>
+          <height>191</height>
          </rect>
         </property>
        </widget>
@@ -482,10 +482,10 @@
        <widget class="PlotWidget" name="Channel1_3" native="true">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>761</width>
-          <height>171</height>
+          <x>0</x>
+          <y>-1</y>
+          <width>781</width>
+          <height>191</height>
          </rect>
         </property>
        </widget>
@@ -512,6 +512,16 @@
          <height>279</height>
         </rect>
        </property>
+       <widget class="QWidget" name="spectro1" native="true">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>-1</y>
+          <width>691</width>
+          <height>281</height>
+         </rect>
+        </property>
+       </widget>
       </widget>
      </widget>
      <widget class="QLabel" name="label_5">
@@ -720,8 +730,6 @@
        <normaloff>open.jpg</normaloff>open.jpg</iconset>
      </property>
      <addaction name="actionChannel1"/>
-     <addaction name="actionChannel2"/>
-     <addaction name="actionChannel3"/>
     </widget>
     <addaction name="actionNew_Project"/>
     <addaction name="menuOpen"/>
@@ -860,7 +868,7 @@
   </action>
   <action name="actionChannel1">
    <property name="text">
-    <string>Channel1</string>
+    <string>New</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+1</string>

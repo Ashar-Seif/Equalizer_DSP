@@ -8,22 +8,27 @@ import random
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.io import wavfile
+import matplotlib.pyplot as plt
+from scipy.io import wavfile as wav
+from scipy.fftpack import fft
+import numpy as np
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from scipy.stats import norm
 # Parameters
 samplerate = 44100   # samples per second
-#T = 3           # sample duration (seconds)
-#f = 440.0       # sound frequency (Hz)
-x3=np.array([])
-#for f in range(400,700,30):
-for i in range (15):
-     f = random.randint(300,700)
-     print(f)
-     #Returns a random float number between 0 and 1
-     duration = random.randint(1,3)
-     samples = duration*samplerate
-     t = np.linspace(0,duration, samples, endpoint=False)
-     x = np.sin(2*np.pi * f * t) 
-     x2 =np.concatenate((x3,x),axis=0)
-     x3=x2
-x3=np.delete(x3,0,0)
+duration = 2
+samples = duration*samplerate
+t = np.linspace(0,duration, samples, endpoint=False)
+x = (np.sin(2*np.pi*100*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*150*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*250*t)+np.sin(2*np.pi * 300 * t) +np.sin(2*np.pi * 350 * t) +np.sin(2*np.pi * 400 * t) +np.sin(2*np.pi * 450 * t))
 # Write the samples to a file
-wavio.write("sine.wav", x3, samplerate, sampwidth=3)
+wavio.write("sine.wav", x, samplerate, sampwidth=1)
+
+#data = wavio.read("sine.wav")
+#samplerate,data = wavfile.read("sine.wav")
+
+
+
+       
+      
