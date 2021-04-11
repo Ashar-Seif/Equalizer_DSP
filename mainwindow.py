@@ -171,9 +171,11 @@ class Ui_MainWindow(object):
         self.Channel1_3.setGeometry(QtCore.QRect(0, -1, 781, 191))
         self.Channel1_3.setObjectName("Channel1_3")
         self.scrollArea_3.setWidget(self.scrollAreaWidgetContents_4)
-        self.scrollArea_4 = QtWidgets.QScrollArea(self.tab)
+        ##QLabel
+        self.scrollArea_4 = QtWidgets.QLabel(self.tab)
         self.scrollArea_4.setGeometry(QtCore.QRect(870, 110, 691, 281))
-        self.scrollArea_4.setWidgetResizable(True)
+        # self.scrollArea_4.setWidgetResizable(True)
+        self.scrollArea_4.setScaledContents(True)
         self.scrollArea_4.setObjectName("scrollArea_4")
         self.scrollAreaWidgetContents_6 = QtWidgets.QWidget()
         self.scrollAreaWidgetContents_6.setGeometry(QtCore.QRect(0, 0, 689, 279))
@@ -181,7 +183,7 @@ class Ui_MainWindow(object):
         self.spectro1 = QtWidgets.QWidget(self.scrollAreaWidgetContents_6)
         self.spectro1.setGeometry(QtCore.QRect(0, -1, 691, 281))
         self.spectro1.setObjectName("spectro1")
-        self.scrollArea_4.setWidget(self.scrollAreaWidgetContents_6)
+        # self.scrollArea_4.setWidget(self.scrollAreaWidgetContents_6)
         self.label_5 = QtWidgets.QLabel(self.tab)
         self.label_5.setGeometry(QtCore.QRect(870, 80, 141, 16))
         self.label_5.setObjectName("label_5")
@@ -315,7 +317,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuProject.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
-
+        ####
+        # self.scrollArea_4.setPixmap(QtGui.QPixmap('Channel3.png'))
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

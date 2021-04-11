@@ -44,6 +44,15 @@ class MainWindow(QtWidgets.QMainWindow):
      #Action for Scrolling:
         self.ui.pushButton_5.clicked.connect(lambda: self.scroll_right1())
         self.ui.pushButton_6.clicked.connect(lambda: self.scroll_left1())
+        self.ui.spinBox.setSingleStep(10)
+        self.ui.spinBox.setValue(10)
+        self.ui.spinBox.setMinimum(10)
+        self.ui.spinBox.setMaximum(90)
+    #Set_speed 
+        self.ui.spinBox.valueChanged.connect(lambda: self.set_speed())
+    #Show / Hide
+        self.ui.checkBox.clicked.connect(self.ui.scrollArea_4.hide)
+        self.ui.checkBox_2.clicked.connect(self.ui.scrollArea_5.hide)
 
 
     def load(self):
@@ -90,10 +99,22 @@ class MainWindow(QtWidgets.QMainWindow):
     #Input spectro 
     def spectro(self,data):
         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
-        plot.xlabel('Time')
-        plot.ylabel('Frequency')
-        plot.show()
-       
+        # self.ui.Channel1_3.plotItem.setLimits(xMin=0,xMax=12)
+        # self.ui.Channel1_3.plot.Specgram(data,Fs=2000, Fc=None)
+        # self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
+        # plot.xlabel('Time')
+        # plot.ylabel('Frequency')
+        # plot.show()
+        plot.savefig('Channel3.png', dpi=300, bbox_inches='tight')
+        # image.savefig(fig,bbox_inches="tight", dpi=300)
+        # self.ui.scrollArea_4.show('Channel3.png')
+        # self.photo.setPixmap(QtGui.QPixmap('Channel3.png'))
+        # # pixmap = QPixmap('channel3.png')
+        # self.resize(pixmap.width(30), pixmap.height(30))
+        # self.scrollArea_4.show()
+        self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Channel3.png'))
+        os.remove("Channel3.png")
+
 
  #resume&pause
     def resume_1(self):
@@ -114,6 +135,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.Channel1_2.plotItem.getViewBox().translateBy(x=-0.1,y=0)
     def scroll_left1(self):
         self.ui.Channel1_2.plotItem.getViewBox().translateBy(x=0.1,y=0)
+    def set_speed(self):
+        # self.label_3.setText("current value:"+str(self.spinBox.value()))
+        self.timer1.setInterval(self.ui.spinBox.value())
+        self.timer1.timeout.connect(self.update_plot_data1(self.data_line1,time,data))
+        self.timer1.start()
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
