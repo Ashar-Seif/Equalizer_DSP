@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QFil
 from PyQt5 import QtWidgets, QtCore,QtGui,uic,QtMultimedia
 from mainwindow import Ui_MainWindow
 import matplotlib.pyplot as plot
+from scipy.fftpack import fft,rfft
 from scipy.io import wavfile
 from random import randint
 import pandas as pd
@@ -9,6 +10,7 @@ import pyqtgraph as pg
 import numpy as np 
 import sys  # We need sys so that we can pass argv to QApplication
 import os
+import cmath 
 QMediaPlayer=QtMultimedia.QMediaPlayer
 QMediaContent=QtMultimedia.QMediaContent
 QAction=QtWidgets.QAction
@@ -73,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.time = np.arange(self.sample_length) / self.samplerate
         self.Channel1(self.data,self.time)
         self.spectro(self.data)
+        self.FFT(self.data,self.samplerate,self.sample_length) 
     #Plotting input signal 
     def Channel1 (self,data,time):
         self.data_line1 =self.ui.Channel1_2.plot(time,data,pen=self.pen1)
@@ -96,22 +99,31 @@ class MainWindow(QtWidgets.QMainWindow):
             self.ui.Channel1_2.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
         self.ui.Channel1_2.plotItem.setXRange(max(x,default=0)-0.5 , max(x,default=0))
         self.data_line1.setData(x, y)
+
+    def FFT(self,data,samplerate,sample_length):
+        self.FFT = np.fft.fft(data)
+        # Normalize
+        self.FFTdata = abs(self.FFT)
+        self.freqs = np.fft.fftfreq(self.sample_length,1/samplerate)
+        #self.Bands(self.FFTdata.size)
+        self.IFFT(self.FFTdata,samplerate)
+   
+    def IFFT (self,data,samplerate,freqs):
+        self.IFFT=(np.fft.ifft(self.FFT))
+        self.magnitude= self.IFFT.real
+        self.sample_length = self.IFFT.shape[0] 
+        self.phase=[]
+        for i in (self.IFFT):
+            self.fphase=cmath.phase(i)
+            self.phase.append(self.fphase)
+    #def Bands(self,size): 
+     #   bandsno = math.ceil(0.05 * size)
+      #  self.bands =[self.FFT[i * bandsno:(i + 1) * bandsno] for i in range(0,20)]  
+      
     #Input spectro 
     def spectro(self,data):
         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
-        # self.ui.Channel1_3.plotItem.setLimits(xMin=0,xMax=12)
-        # self.ui.Channel1_3.plot.Specgram(data,Fs=2000, Fc=None)
-        # self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
-        # plot.xlabel('Time')
-        # plot.ylabel('Frequency')
-        # plot.show()
         plot.savefig('Channel3.png', dpi=300, bbox_inches='tight')
-        # image.savefig(fig,bbox_inches="tight", dpi=300)
-        # self.ui.scrollArea_4.show('Channel3.png')
-        # self.photo.setPixmap(QtGui.QPixmap('Channel3.png'))
-        # # pixmap = QPixmap('channel3.png')
-        # self.resize(pixmap.width(30), pixmap.height(30))
-        # self.scrollArea_4.show()
         self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Channel3.png'))
         os.remove("Channel3.png")
 
