@@ -95,7 +95,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.idx1 +=10
         if self.idx1 > len(self.time) :
             self.idx1 = 0 
-        if  self.time[self.idx1] >0.5:
+        if  self.time[self.idx2] >0.5:
             self.ui.Channel1_2.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
         self.ui.Channel1_2.plotItem.setXRange(max(x,default=0)-0.5 , max(x,default=0))
         self.data_line1.setData(x, y)
@@ -108,25 +108,57 @@ class MainWindow(QtWidgets.QMainWindow):
         #self.Bands(self.FFTdata.size)
         self.IFFT(self.FFTdata,samplerate)
    
-    def IFFT (self,data,samplerate,freqs):
+    def IFFT (self,data,samplerate):
         self.IFFT=(np.fft.ifft(self.FFT))
         self.magnitude= self.IFFT.real
         self.sample_length = self.IFFT.shape[0] 
         self.phase=[]
+        self.time = np.arange(self.sample_length) / self.samplerate
+        self.Channel2(self.magnitude,self.time)
+        self.spectro1(self.data)
         for i in (self.IFFT):
             self.fphase=cmath.phase(i)
             self.phase.append(self.fphase)
+            
     #def Bands(self,size): 
      #   bandsno = math.ceil(0.05 * size)
       #  self.bands =[self.FFT[i * bandsno:(i + 1) * bandsno] for i in range(0,20)]  
-      
+      #Plotting input signal 
+    def Channel2 (self,data,time):
+        self.data_line2 =self.ui.Channel1_3.plot(time,data,pen=self.pen2)
+        self.ui.Channel1_3.plotItem.setLimits(xMin =0, xMax=12)
+        self.idx2=0
+        self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
+        self.timer2.setInterval(10)
+        self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,data))
+        self.timer2.start()
+        self.ui.Channel1_3.show()
+        #self.ui.Channel1_2.setXRange(0))
+
+  #Updating plots and repeating signals 
+    def update_plot_data2(self,data_line,time,data):
+        x = time[:self.idx2]
+        y = data[:self.idx2]  
+        self.idx2 +=10
+        if self.idx2 > len(self.time) :
+            self.idx2 = 0 
+        if  self.time[self.idx2] >0.5:
+            self.ui.Channel1_3.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
+        self.ui.Channel1_3.plotItem.setXRange(max(x,default=0)-0.5 , max(x,default=0))
+        self.data_line2.setData(x, y)
+
     #Input spectro 
     def spectro(self,data):
         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
-        plot.savefig('Channel3.png', dpi=300, bbox_inches='tight')
-        self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Channel3.png'))
-        os.remove("Channel3.png")
-
+        plot.savefig('Input.png', dpi=300, bbox_inches='tight')
+        self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input.png'))
+        os.remove("Input.png")
+ #Output spectro 
+    def spectro1(self,data):
+        sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
+        plot.savefig('Output.png', dpi=300, bbox_inches='tight')
+        self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Output.png'))
+        os.remove("Output.png")
 
  #resume&pause
     def resume_1(self):
