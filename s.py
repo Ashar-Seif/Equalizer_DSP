@@ -186,25 +186,19 @@ class MainWindow(QtWidgets.QMainWindow):
         for i in range(10):
             self.bands.append(self.fftmagnitude[int(i / 10 * len(self.fftmagnitude)): int(
                 min(len(self.fftmagnitude) + 1, (i + 1) / 10 * len(self.fftmagnitude)))])
-        self.bandsdata=np.copy(self.bands)
-        print(self.bandsdata[0])
-
+    
     def gain(self,slider,sliderValue):
-        self.bandsdata[slider] = np.multiply(self.bands[slider], sliderValue)
-        #self.ifft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
-        print(self.bandsdata[slider])
-        flat_list = [item for sublist in self.bandsdata for item in sublist]
-        self.gaineddata = []
-        for sublist in self.bandsdata:
+        self.bands[slider] = np.multiply(self.bands[slider], sliderValue)
+        flat_list = [item for sublist in self.bands for item in sublist]
+        new_signal = []
+        for sublist in self.bands:
            for item in sublist:
-               self.gaineddata.append(item)
-        self.Newfft= np.multiply(self.phase,self.gaineddata)
-        
-    def IFFT (self):
-        self.IFFT = np.fft.irfft(self.Newfft)
+               new_signal.append(item)
+        final= np.multiply(self.phase,new_signal)
+        self.inverse = np.fft.irfft(final)
         self.time = np.arange(self.sample_length) / self.samplerate
-        wavio.write("Output.wav", self.IFFT, self.samplerate, sampwidth=1)
-        self.Channel2(self.IFFT,self.time)
+        wavio.write("sine.wav", self.inverse , self.samplerate, sampwidth=1)
+        self.Channel2(self.inverse,self.time)
 
     def Channel2 (self,data,time):
        self.data_line2 =self.ui.Channel1_3.plot(time,data,pen=self.pen2)
@@ -236,11 +230,11 @@ class MainWindow(QtWidgets.QMainWindow):
      self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input.png'))
      os.remove("Input.png")
  #Ouput spectro 
-    def spectro1(self,data):
-       sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
-       plot.savefig('Output.png', dpi=300, bbox_inches='tight')
-       self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Output.png'))
-       os.remove("Output.png")
+  #  def spectro1(self,data):
+       #sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
+       #plot.savefig('Output.png', dpi=300, bbox_inches='tight')
+       #self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Output.png'))
+       #os.remove("Output.png")
 
  #rume&pause
     def resume_1(self):

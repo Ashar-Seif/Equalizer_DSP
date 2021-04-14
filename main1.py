@@ -182,39 +182,151 @@ class MainWindow(QtWidgets.QMainWindow):
         self.fftmagnitude = abs(self.FFT)
         self.phase=np.angle(self.FFT)
         self.freqs = np.fft.rfftfreq(len(data),1/samplerate) 
-        self.bands = []  # creating Bands
-        for i in range(10):
-            self.bands.append(self.fftmagnitude[int(i / 10 * len(self.fftmagnitude)): int(
-                min(len(self.fftmagnitude) + 1, (i + 1) / 10 * len(self.fftmagnitude)))])
-        self.bandsdata=np.copy(self.bands)
-        print(self.bandsdata[0])
-
-    def gain(self,slider,sliderValue):
-        self.bandsdata[slider] = np.multiply(self.bands[slider], sliderValue)
-        #self.ifft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
-        print(self.bandsdata[slider])
-        flat_list = [item for sublist in self.bandsdata for item in sublist]
-        self.gaineddata = []
-        for sublist in self.bandsdata:
-           for item in sublist:
-               self.gaineddata.append(item)
-        self.Newfft= np.multiply(self.phase,self.gaineddata)
+        #self.bandlimit=(len(self.freqs)-1)/10  
         
-    def IFFT (self):
-        self.IFFT = np.fft.irfft(self.Newfft)
-        self.time = np.arange(self.sample_length) / self.samplerate
-        wavio.write("Output.wav", self.IFFT, self.samplerate, sampwidth=1)
-        self.Channel2(self.IFFT,self.time)
+        self.bandlimit=(len(self.fftmagnitude)-1)/10  
+        self.createbands(self.bandlimit,self.freqs,self.fftmagnitude)
+        
+    
+    def createbands(self,bandlimit,freqs,fftmagnitude):
+   #     self.bands=[] 
+        self.bandsdata=[]
+       # self.gaineddata=[]
+       # self.bandsdata1=[]
+       # self.bandsdata2=[]  
+       # self.bandsdata3=[]  
+       # self.bandsdata4=[]  
+       # self.bandsdata5=[]  
+       # self.bandsdata6=[]  
+       # self.bandsdata7=[]  
+       # self.bandsdata8=[]  
+       # self.bandsdata9=[]  
+       # self.bandsdata10=[]        
+        for i in range (10):
+           #self.bands.append([])
+           self.bandsdata.append([])
+   # 
+   #     frequencies=np.sort(freqs)
+        for data in fftmagnitude:
+           
+            for i in range (0,int(bandlimit)):
+               self.bandsdata[0].append(data)
+               #self.bands[0].append(f) 
+           
+               #self.bandsdata1.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (int(bandlimit),2*int(bandlimit)):
+               self.bandsdata[1].append(data)
+               #self.bands[1].append(f)
+           
+               #self.bandsdata2.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (2*int(bandlimit),3*int(bandlimit)):
+               self.bandsdata[2].append(data)
+               #self.bands[2].append(f)
+           
+               #self.bandsdata3.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (3*int(bandlimit),4*int(bandlimit)):
+               self.bandsdata[3].append(data)
+               #self.bands[3].append(f)
+           
+               #self.bandsdata4.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (4*int(bandlimit),5*int(bandlimit)):
+               self.bandsdata[4].append(data)
+               #self.bands[4].append(f)
+           
+               #self.bandsdata5.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (5*int(bandlimit),6*int(bandlimit)):
+               self.bandsdata[5].append(data)
+               #self.bands[5].append(f)
+           
+               #self.bandsdata6.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (6*int(bandlimit),7*int(bandlimit)):
+               self.bandsdata[6].append(data)
+               #self.bands[6].append(f)
+           
+               #self.bandsdata7.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (7*int(bandlimit),8*int(bandlimit)):
+               self.bandsdata[7].append(data)
+               #self.bands[7].append(f)
+           
+               #self.bandsdata8.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (8*int(bandlimit),9*int(bandlimit)):
+               self.bandsdata[8].append(data)
+               #self.bands[8].append(f)
+           
+               #self.bandsdata9.append(self.fftmagnitude[np.where(frequencies==f)])
+           
+            for i in range (9*int(bandlimit),10*int(bandlimit)):
+               self.bandsdata[9].append(data)
+               #self.bands[9].append(f)
+           
+               #self.bandsdata10.append(self.fftmagnitude[np.where(frequencies==f)])
+        print(len(bandsdata[0]))
 
-    def Channel2 (self,data,time):
-       self.data_line2 =self.ui.Channel1_3.plot(time,data,pen=self.pen2)
-       self.ui.Channel1_3.plotItem.setLimits(xMin =0, xMax=12)
-       self.idx2=0
-       self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
-       self.timer2.setInterval(10)
-       self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,data))
-       self.timer2.start()
-       self.ui.Channel1_3.show()
+       #for band in range (len(self.bands)):
+       #    for mag in range (len(self.bands[band])):
+      #          self.bandsdata[band].append(fftmagnitude[mag])
+       #  elf.gainedfreqs = self.bands
+      
+        #self.bandsdata=self.bandsdata1+self.bandsdata2+self.bandsdata3+self.bandsdata4+self.bandsdata5+self.bandsdata6+self.bandsdata7+self.bandsdata8+self.bandsdata9+self.bandsdata10
+        #self.gaineddata=self.bandsdata
+        #print(len(self.bandsdata))
+       
+    def gain (self,slider,slidervalue) :
+   #      self.gainedfreqs[slider] = np.multiply(np.array(self.bands[slider]),slidervalue)
+          # self.gaineddata[slider] = np.multiply(np.array(self.bandsdata[slider]),slidervalue)
+          if slider == 0:
+             self.bandsdata1=self.bandsdata1*slidervalue
+          elif slider == 1:
+             self.bandsdata2=self.bandsdata2*slidervalue
+          elif slider == 2:
+             self.bandsdata3=self.bandsdata3*slidervalue
+          elif slider == 3:
+             self.bandsdata4=self.bandsdata4*slidervalue
+          elif slider == 4:
+             self.bandsdata5=self.bandsdata5*slidervalue
+          elif slider == 5:
+             self.bandsdata6=self.bandsdata6*slidervalue
+          elif slider == 6:
+             self.bandsdata7=self.bandsdata7*slidervalue
+          elif slider == 7:
+             self.bandsdata8=self.bandsdata8*slidervalue
+          elif slider == 8:
+             self.bandsdata9=self.bandsdata9*slidervalue
+          elif slider == 9:
+             self.bandsdata10=self.bandsdata10*slidervalue
+          else:
+             self.gaineddata = self.bandsdata
+          self.gaineddata=self.bandsdata1+self.bandsdata2+self.bandsdata3+self.bandsdata4+self.bandsdata5+self.bandsdata6+self.bandsdata7+self.bandsdata8+self.bandsdata9+self.bandsdata10
+          #self.gaineddata=np.array(self.gaineddata,dtype='float64')
+          #self.gaineddata=self.gaineddata.flatten()
+          print(len(self.gaineddata))
+          self.IFFT(self.gaineddata)
+    def IFFT (self):
+        #self.ifft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
+        self.IFFT=np.fft.irfft(self.gaineddata)
+        wavio.write("s.wav",self.IFFT , self.samplerate, sampwidth=1)
+        self.sample_length = self.IFFT.shape[0] 
+        self.time = np.arange(self.sample_length) / self.samplerate
+        self.Channel2(self.IFFT,self.ti )
+ #
+   # 
+   # def Channel2 (self,data,time):
+   #    self.data_line2 =self.ui.Channel1_3.plot(time,data,pen=self.pen2)
+   #    self.ui.Channel1_3.plotItem.setLimits(xMin =0, xMax=12)
+   #    self.idx2=0
+   #    self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
+   #    self.timer2.setInterval(10)
+   #    self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,data))
+   #    self.timer2.start()
+   #    self.ui.Channel1_3.show()
      
 
   #dating plots and repeating signals 
@@ -236,11 +348,11 @@ class MainWindow(QtWidgets.QMainWindow):
      self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input.png'))
      os.remove("Input.png")
  #Ouput spectro 
-    def spectro1(self,data):
-       sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
-       plot.savefig('Output.png', dpi=300, bbox_inches='tight')
-       self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Output.png'))
-       os.remove("Output.png")
+  #  def spectro1(self,data):
+       #sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None)
+       #plot.savefig('Output.png', dpi=300, bbox_inches='tight')
+       #self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Output.png'))
+       #os.remove("Output.png")
 
  #rume&pause
     def resume_1(self):

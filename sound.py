@@ -8,7 +8,7 @@ import struct
 audio = []
 
 # 44100 is the industry standard sample rate - CD quality.
-sample_rate = 44100.0
+sample_rate = 44100
 
 
 
