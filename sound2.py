@@ -18,10 +18,10 @@ from scipy.stats import norm
 from scipy.stats import norm
 # Parameters
 samplerate = 44100   # samples per second
-duration = 2
+duration = 1
 samples = duration*samplerate
 t = np.linspace(0,duration, samples, endpoint=False)
-x = (np.sin(2*np.pi*100*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*150*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*250*t)+np.sin(2*np.pi * 300 * t) +np.sin(2*np.pi * 350 * t) +np.sin(2*np.pi * 400 * t) +np.sin(2*np.pi * 450 * t))
+x = (np.sin(2*np.pi*100*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi * 300 * t) +np.sin(2*np.pi * 400 * t) )
 # Write the samples to a file
 wavio.write("sine.wav", x, samplerate, sampwidth=1)
 

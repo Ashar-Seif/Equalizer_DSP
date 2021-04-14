@@ -11,9 +11,10 @@ import numpy as np
 import sys  # We need sys so that we can pass argv to QApplication
 import os
 import cmath 
-QMediaPlayer=QtMultimedia.QMediaPlayer
-QMediaContent=QtMultimedia.QMediaContent
-QAction=QtWidgets.QAction
+import itertools
+import operator
+import wavio
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -24,7 +25,6 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi('mainwindow.ui', self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.player = QMediaPlayer(self)
     #Actions of open menulist
         self.ui.actionChannel1.triggered.connect(self.load)
         self.ui.Channel1_2.setBackground('w')
@@ -56,10 +56,31 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.checkBox.clicked.connect(self.ui.scrollArea_4.hide)
         self.ui.checkBox_2.clicked.connect(self.ui.scrollArea_5.hide)
     #pallettes
-        self.ui.comboBox.activated.connect(self.default_palette)
+      #  self.ui.comboBox.activated.connect(self.default_palette)
+    ##Sliders
+        self.sliders = [self.ui.verticalSlider,self.ui.verticalSlider_2,self.ui.verticalSlider_3,self.ui.verticalSlider_4,self.ui.verticalSlider_5,self.ui.verticalSlider_6,self.ui.verticalSlider_7,self.ui.verticalSlider_8,self.ui.verticalSlider_9,self.ui.verticalSlider_10]
+  # #Configure each slider
+        for slid in self.sliders:
+            slid.setMinimum(0)
+            slid.setMaximum(5)
+            slid.setPageStep(1)
+            slid.setValue(1)
+            slid.setSingleStep(1)
+      # sliders 
+        self.sliders[0].valueChanged.connect(lambda: self.sliderChanged(0))
+        self.sliders[1].valueChanged.connect(lambda: self.sliderChanged(1))
+        self.sliders[2].valueChanged.connect(lambda: self.sliderChanged(2))
+        self.sliders[3].valueChanged.connect(lambda: self.sliderChanged(3))
+        self.sliders[4].valueChanged.connect(lambda: self.sliderChanged(4))
+        self.sliders[5].valueChanged.connect(lambda: self.sliderChanged(5))
+        self.sliders[6].valueChanged.connect(lambda: self.sliderChanged(6))
+        self.sliders[7].valueChanged.connect(lambda: self.sliderChanged(7))
+        self.sliders[8].valueChanged.connect(lambda: self.sliderChanged(8))
+        self.sliders[9].valueChanged.connect(lambda: self.sliderChanged(9))
 
-
-
+    def sliderChanged(self, slider):
+        sliderValue = self.sliders[slider].value()
+        self.gain(slider,sliderValue)
     def load(self):
         options =  QtWidgets.QFileDialog.Options()
         fname = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "",
@@ -77,59 +98,60 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sample_length = self.data.shape[0] 
         self.time = np.arange(self.sample_length) / self.samplerate
         self.Channel1(self.data,self.time)
-        self.default_palette(self.data)
+    #    self.default_palette(self.data)
         self.FFT(self.data,self.samplerate,self.sample_length)
-    #spectos
-    def default_palette(self, data):
-        if(self.ui.comboBox.currentText()=="Pallette 1"):
-             sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="viridis")
-             plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
-             self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
-             os.remove("Input1.png")
-             print("1")
+   
+   ## def default_palette(self, data):
+   ##     if(self.ui.comboBox.currentText()=="Pallette 1"):
+   ##          sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="viridis")
+   ##          plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
+   ##          self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
+   ##          os.remove("Input1.png")
+   ##          print("1")
+    #         
+    #    elif(self.ui.comboBox.currentText()=="Pallette 2"):
+    #         self.palette_2(self.data)
+    #
+    #    elif(self.ui.comboBox.currentText()=="Pallette 3"):
+    #
+    #        self.palette_3(self.data)
+    #
+    #    elif(self.ui.comboBox.currentText()=="Pallette 4"):
+    #
+    #        self.palette_4(self.data)
+    #    else:
+    #        self.palette_5(self.data)
+#
+#
+    #def palette_2(self,data):
+    #         self.ui.scrollArea_4.clear
+    #         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="inferno")
+    #         plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
+    #         self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
+    #         os.remove("Input1.png")
+    #         print("2")
+    #def palette_3(self,data):
+    #         self.ui.scrollArea_4.clear
+    #         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="magma")
+    #         plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
+    #         self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
+    #         os.remove("Input1.png")
+    #         print("3")
+    #def palette_4(self,data):
+    #         self.ui.scrollArea_4.clear
+    #         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="plasma")
+    #         plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
+    #         self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
+    #         os.remove("Input1.png")
+    #         print("4")
+    #def palette_5(self,data):
+    #         self.ui.scrollArea_4.clear
+    #         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="Greys")
+    #         plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
+    #         self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
+    #         os.remove("Input1.png")
+    #         print("5")
              
-        elif(self.ui.comboBox.currentText()=="Pallette 2"):
-             self.palette_2(self.data)
-        elif(self.ui.comboBox.currentText()=="Pallette 3"):
-            self.palette_3(self.data)
-        elif(self.ui.comboBox.currentText()=="Pallette 4"):
-            self.palette_4(self.data)
-        else:
-            self.palette_5(self.data)
-
-
-    def palette_2(self,data):
-             self.ui.scrollArea_4.clear
-             sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="inferno")
-             plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
-             self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
-             os.remove("Input1.png")
-             print("2")
-    def palette_3(self,data):
-             self.ui.scrollArea_4.clear
-             sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="magma")
-             plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
-             self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
-             os.remove("Input1.png")
-             print("3")
-    def palette_4(self,data):
-             self.ui.scrollArea_4.clear
-             sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="plasma")
-             plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
-             self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
-             os.remove("Input1.png")
-             print("4")
-    def palette_5(self,data):
-             self.ui.scrollArea_4.clear
-             sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(data,Fs=2000, Fc=None,cmap="Greys")
-             plot.savefig('Input1.png', dpi=300, bbox_inches='tight')
-             self.ui.scrollArea_4.setPixmap(QtGui.QPixmap('Input1.png'))
-             os.remove("Input1.png")
-             print("5")
-
-            
-
-        
     #Plotting input signal 
     def Channel1 (self,data,time):
         self.data_line1 =self.ui.Channel1_2.plot(time,data,pen=self.pen1)
@@ -155,30 +177,114 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data_line1.setData(x, y)
 
     def FFT(self,data,samplerate,sample_length):
-        self.FFT = np.fft.fft(data)
+        self.FFT = np.fft.rfft(data)
+        print(type(self.FFT))
         # Normalize
-        self.FFTdata = abs(self.FFT)
-        self.freqs = np.fft.fftfreq(self.sample_length,1/samplerate)
-        print(self.freqs)
-        #self.Bands(self.FFTdata.size)
-        #self.IFFT(self.FFTdata,samplerate)
-   
-    def IFFT (self,data,samplerate):
-        self.IFFT=(np.fft.ifft(self.FFT))
-        self.magnitude= self.IFFT.real
+        self.fftmagnitude = abs(self.FFT)
+        self.phase=np.angle(self.FFT)
+        print(len(self.phase))
+        self.freqs = np.fft.rfftfreq(len(data),1/samplerate) 
+        self.bandlimit=max(self.freqs)/10       
+        self.createbands(self.bandlimit,self.freqs,self.fftmagnitude)
+        
+    
+    def createbands(self,bandlimit,freqs,fftmagnitude):
+        self.bands=[] 
+        self.bandsdata=[]
+        self.gaineddata=[]
+        self.bandsdata1=[]
+        self.bandsdata2=[]  
+        self.bandsdata3=[]  
+        self.bandsdata4=[]  
+        self.bandsdata5=[]  
+        self.bandsdata6=[]  
+        self.bandsdata7=[]  
+        self.bandsdata8=[]  
+        self.bandsdata9=[]  
+        self.bandsdata10=[]        
+        for i in range (10):
+            self.bands.append([])
+           # self.bandsdata.append([])
+    
+        frequencies=np.sort(freqs)
+        for f in frequencies :
+            if (frequencies[0]<=f<bandlimit):
+                self.bands[0].append(f) 
+                self.bandsdata1.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (bandlimit<=f<2*bandlimit):
+                self.bands[1].append(f)
+                self.bandsdata2.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (2*bandlimit<=f<3*bandlimit):
+                self.bands[2].append(f)
+                self.bandsdata3.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (3*bandlimit<=f<4*bandlimit):
+                self.bands[3].append(f)
+                self.bandsdata4.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (4*bandlimit<=f<5*bandlimit):
+                self.bands[4].append(f)
+                self.bandsdata5.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (5*bandlimit<=f<6*bandlimit):
+                self.bands[5].append(f)
+                self.bandsdata6.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (6*bandlimit<=f<7*bandlimit):
+                self.bands[6].append(f)
+                self.bandsdata7.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (7*bandlimit<=f<8*bandlimit):
+                self.bands[7].append(f)
+                self.bandsdata8.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (8*bandlimit<=f<9*bandlimit):
+                self.bands[8].append(f)
+                self.bandsdata9.append(self.fftmagnitude[np.where(frequencies==f)])
+            if (9*bandlimit<=f<=10*bandlimit):
+                self.bands[9].append(f)
+                self.bandsdata10.append(self.fftmagnitude[np.where(frequencies==f)])
+       
+        #for band in range (len(self.bands)):
+        #    for mag in range (len(self.bands[band])):
+        #        self.bandsdata[band].append(fftmagnitude[mag])
+        self.gainedfreqs = self.bands
+        self.bandsdata=self.bandsdata1+self.bandsdata2+self.bandsdata3+self.bandsdata4+self.bandsdata5+self.bandsdata6+self.bandsdata7+self.bandsdata8+self.bandsdata9+self.bandsdata10
+        print(len(self.bandsdata))
+        
+
+    def gain (self,slider,slidervalue) :
+        self.gainedfreqs[slider] = np.multiply(np.array(self.bands[slider]),slidervalue)
+        #self.gaineddata[slider] = np.multiply(np.array(self.bandsdata[slider]),slidervalue)
+        if slider == 0:
+           self.bandsdata1=self.bandsdata1*slidervalue
+        elif slider == 1:
+           self.bandsdata2=self.bandsdata2*slidervalue
+        elif slider == 2:
+           self.bandsdata3=self.bandsdata3*slidervalue
+        elif slider == 3:
+           self.bandsdata4=self.bandsdata4*slidervalue
+        elif slider == 4:
+           self.bandsdata5=self.bandsdata5*slidervalue
+        elif slider == 5:
+           self.bandsdata6=self.bandsdata6*slidervalue
+        elif slider == 6:
+           self.bandsdata7=self.bandsdata7*slidervalue
+        elif slider == 7:
+           self.bandsdata8=self.bandsdata8*slidervalue
+        elif slider == 8:
+           self.bandsdata9=self.bandsdata9*slidervalue
+        elif slider == 9:
+           self.bandsdata10=self.bandsdata10*slidervalue
+        else:
+           self.gaineddata = self.bandsdata
+        self.gaineddata=self.bandsdata1+self.bandsdata2+self.bandsdata3+self.bandsdata4+self.bandsdata5+self.bandsdata6+self.bandsdata7+self.bandsdata8+self.bandsdata9+self.bandsdata10
+        print(len(self.gaineddata))
+        self.IFFT(self.gaineddata)
+    def IFFT (self,gaineddata):
+        ifft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
+        self.IFFT=np.fft.irfft(gaineddata)
+        wavio.write("s.wav",self.IFFT , self.samplerate, sampwidth=1)
+        print(type(self.IFFT))
         self.sample_length = self.IFFT.shape[0] 
-        self.phase=[]
         self.time = np.arange(self.sample_length) / self.samplerate
-        self.Channel2(self.magnitude,self.time)
-        self.spectro1(self.data)
-        for i in (self.IFFT):
-           self.fphase=cmath.phase(i)
-           self.phase.append(self.fphase)
-           
-    #def Bands(self,size): 
-       # bandsno = math.ceil(0.05 * size)
-     #  self.bands =[self.FFT[i * bandsno:(i + 1) * bandsno] for i in range(0,20)]  
-     #Plotting input signal 
+        self.Channel2(self.IFFT,self.time)
+ 
+    
     def Channel2 (self,data,time):
        self.data_line2 =self.ui.Channel1_3.plot(time,data,pen=self.pen2)
        self.ui.Channel1_3.plotItem.setLimits(xMin =0, xMax=12)
@@ -188,7 +294,7 @@ class MainWindow(QtWidgets.QMainWindow):
        self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,data))
        self.timer2.start()
        self.ui.Channel1_3.show()
-      # self.ui.Channel1_2.setXRange(0)
+     
 
   #dating plots and repeating signals 
     def update_plot_data2(self,data_line,time,data):
@@ -235,7 +341,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def scroll_left1(self):
         self.ui.Channel1_2.plotItem.getViewBox().translateBy(x=0.1,y=0)
     def set_speed(self):
-        # self.label_3.setText("current value:"+str(self.spinBox.value()))
         self.timer1.setInterval(self.ui.spinBox.value())
         self.timer1.timeout.connect(self.update_plot_data1(self.data_line1,time,data))
         self.timer1.start()
