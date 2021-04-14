@@ -187,21 +187,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.bands.append(self.fftmagnitude[int(i / 10 * len(self.fftmagnitude)): int(
                 min(len(self.fftmagnitude) + 1, (i + 1) / 10 * len(self.fftmagnitude)))])
         self.bandsdata=np.copy(self.bands)
-        print(self.bandsdata[0])
+        
 
     def gain(self,slider,sliderValue):
         self.bandsdata[slider] = np.multiply(self.bands[slider], sliderValue)
-        #self.ifft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
-        print(self.bandsdata[slider])
         flat_list = [item for sublist in self.bandsdata for item in sublist]
         self.gaineddata = []
         for sublist in self.bandsdata:
            for item in sublist:
                self.gaineddata.append(item)
-        self.Newfft= np.multiply(self.phase,self.gaineddata)
-        
-    def IFFT (self):
-        self.IFFT = np.fft.irfft(self.Newfft)
+        #self.Newfft=np.multiply(np.array(gaineddata),np.exp(1j*self.phase))
+        self.IFFT(self.gaineddata)
+
+    def IFFT (self,Newfft):
+        self.IFFT = np.fft.irfft(Newfft)
         self.time = np.arange(self.sample_length) / self.samplerate
         wavio.write("Output.wav", self.IFFT, self.samplerate, sampwidth=1)
         self.Channel2(self.IFFT,self.time)
