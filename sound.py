@@ -12,7 +12,7 @@ sample_rate = 44100
 
 
 
-def create_signal(f1 = 500, f2 = 600, f3 = 880, f4 = 700 , f5 = 1050, duration_seconds = 2):
+def create_signal(f1 = 500, f2 = 600, f3 = 880, f4 = 700 , f5 = 1050, duration_seconds = 1):
     global audio
     num_samples = duration_seconds * sample_rate
 

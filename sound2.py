@@ -21,7 +21,7 @@ samplerate = 44100   # samples per second
 duration = 1
 samples = duration*samplerate
 t = np.linspace(0,duration, samples, endpoint=False)
-x = (np.sin(2*np.pi*100*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi*200*t)+np.sin(2*np.pi * 300 * t) +np.sin(2*np.pi * 400 * t) )
+x = (np.sin(2*np.pi*50*t)+np.sin(2*np.pi*100*t)+np.sin(2*np.pi*150*t)+np.sin(2*np.pi * 300 * t) +np.sin(2*np.pi * 400 * t)+np.sin(2*np.pi*500*t)+np.sin(2*np.pi*600*t)+np.sin(2*np.pi *700* t) +np.sin(2*np.pi * 1200 * t) )
 # Write the samples to a file
 wavio.write("sine.wav", x, samplerate, sampwidth=1)
 
