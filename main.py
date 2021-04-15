@@ -187,6 +187,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Normalize
         self.fftmagnitude = abs(self.FFT)
         self.phase=np.angle(self.FFT)
+        #print(len(self.phase))
         self.freqs = np.fft.rfftfreq(len(data),1/samplerate) 
         self.bands = []  # creating Bands
         for i in range(10):
@@ -195,13 +196,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bandsdata=[]
         for i in range (10):
            self.bandsdata.append([])
+        self.bandsdata=list.copy(self.bands)
         #print(self.bands[0][0])
         if (self.sliders[0].value()==1 &self.sliders[1].value()==1&self.sliders[2].value()==1&self.sliders[3].value()==1&self.sliders[4].value()==1&self.sliders[5].value()==1&self.sliders[6].value()==1&self.sliders[7].value()==1&self.sliders[8].value()==1&self.sliders[9].value()==1):
                 self.ifft = np.fft.irfft(self.FFT)
                 self.sample_length = self.ifft.shape[0] 
                 time = np.arange(self.sample_length) / self.samplerate
                 self.data_line1=self.ui.Channel1_3.plot(time,self.ifft,pen=self.pen2)
-                #self.ui.Channel1_3.setXRange(0,len(self.data))
                 #self.Channel2(self.ifft,self.time)
                 sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(self.ifft,Fs=2000, Fc=None)
                 plot.savefig('Output1.png', dpi=300, bbox_inches='tight')
@@ -209,16 +210,17 @@ class MainWindow(QtWidgets.QMainWindow):
                 os.remove("Output1.png")
           
     def gain(self,slider,sliderValue):
-        #self.ui.Channel1_3.clear
-        self.ui.Channel1_3.removeItem( self.data_line1)
         self.bandsdata[slider] = np.multiply(self.bands[slider], sliderValue)
+        self.ui.Channel1_3.removeItem(self.data_line1)
         #print(self.bandsdata[slider][0])
         flat_list = [item for sublist in self.bandsdata for item in sublist]
         self.gaineddata = []
         for sublist in self.bandsdata:
            for item in sublist:
                self.gaineddata.append(item)
-        self.IFFT = np.fft.irfft(self.gaineddata)
+        #print(len(self.gaineddata))
+        self.ifft=np.multiply(np.array(self.gaineddata),np.exp(1j*self.phase))
+        self.IFFT = np.fft.irfft(self.ifft)
         self.sample_length = self.IFFT.shape[0] 
         time = np.arange(self.sample_length) / self.samplerate
         wavio.write("Output.wav", self.IFFT, self.samplerate, sampwidth=1)
