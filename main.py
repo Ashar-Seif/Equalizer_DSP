@@ -80,7 +80,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def sliderChanged(self, slider):
         sliderValue = self.sliders[slider].value()
-        self.ui.Channel1_3.clear
         self.gain(slider,sliderValue)
         
     def load(self):
@@ -99,7 +98,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.samplerate,self.data = wavfile.read(path)
         self.sample_length = self.data.shape[0] 
         self.time = np.arange(self.sample_length) / self.samplerate
-        self.Channel1(self.data,self.time)
+        #self.Channel1(self.data,self.time)
+        self.ui.Channel1_2.plot(self.time,self.data,pen=self.pen1)
+        #self.ui.Channel1_2.setXRange(0,len(self.data))
         self.default_palette(self.data)
         self.spectro(self.data)
         self.FFT(self.data,self.samplerate,self.sample_length)
@@ -157,30 +158,30 @@ class MainWindow(QtWidgets.QMainWindow):
              os.remove("Input1.png")
              print("5")
              
-    #Plotting input signal 
-    def Channel1 (self,data,time):
-        self.data_line1 =self.ui.Channel1_2.plot(time,data,pen=self.pen1)
-        self.ui.Channel1_2.plotItem.setLimits(xMin =0 )
-        self.idx1=0
-        self.ui.Channel1_2.plotItem.getViewBox().setAutoPan(x=True,y=True)
-        self.timer1.setInterval(10)
-        self.timer1.timeout.connect(lambda:self.update_plot_data1(self.data_line1,time,data))
-        self.timer1.start()
-        self.ui.Channel1_2.show()
-        #self.ui.Channel1_2.setXRange(0)
-
-  #Updating plots and repeating signals 
-    def update_plot_data1(self,data_line,time,data):
-        x = time[:self.idx1]
-        y = data[:self.idx1]  
-        self.idx1 +=10
-        if self.idx1 > len(self.time) :
-            self.idx1 = 0 
-        if  self.time[self.idx1] >0.5:
-            self.ui.Channel1_2.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
-        self.ui.Channel1_2.plotItem.setXRange(max(x,default=0)-0.5, max(x,default=0))
-        self.data_line1.setData(x, y)
-
+    ##Plotting input signal 
+    #def Channel1 (self,data,time):
+    #    self.data_line1 =self.ui.Channel1_2.plot(time,data,pen=self.pen1)
+    #    self.ui.Channel1_2.plotItem.setLimits(xMin=0 )
+    #    self.idx1=0
+    #    self.ui.Channel1_2.plotItem.getViewBox().setAutoPan(x=True,y=True)
+    #    self.timer1.setInterval(10)
+    #    self.timer1.timeout.connect(lambda:self.update_plot_data1(self.data_line1,time,data))
+    #    self.timer1.start()
+    #    self.ui.Channel1_2.show()
+    #    #self.ui.Channel1_2.setXRange(0)
+#
+  #U#pdating plots and repeating signals 
+    #def update_plot_data1(self,data_line,time,data):
+    #    x = time[:self.idx1]
+    #    y = data[:self.idx1]  
+    #    self.idx1 +=10
+    #    if self.idx1 > len(self.time) :
+    #        self.idx1 = 0 
+    #    if  self.time[self.idx1] >0.5:
+    #        self.ui.Channel1_2.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
+    #    self.ui.Channel1_2.plotItem.setXRange(max(x,default=0)-0.5, max(x,default=0))
+    #    self.data_line1.setData(x, y)
+#
     def FFT(self,data,samplerate,sample_length):
         self.FFT = np.fft.rfft(data)
         # Normalize
@@ -196,16 +197,20 @@ class MainWindow(QtWidgets.QMainWindow):
            self.bandsdata.append([])
         #print(self.bands[0][0])
         if (self.sliders[0].value()==1 &self.sliders[1].value()==1&self.sliders[2].value()==1&self.sliders[3].value()==1&self.sliders[4].value()==1&self.sliders[5].value()==1&self.sliders[6].value()==1&self.sliders[7].value()==1&self.sliders[8].value()==1&self.sliders[9].value()==1):
-                self.ifft = np.fft.irfft(self.fftmagnitude)
+                self.ifft = np.fft.irfft(self.FFT)
                 self.sample_length = self.ifft.shape[0] 
-                self.time = np.arange(self.sample_length) / self.samplerate
-                self.Channel2(self.ifft,self.time)
+                time = np.arange(self.sample_length) / self.samplerate
+                self.data_line1=self.ui.Channel1_3.plot(time,self.ifft,pen=self.pen2)
+                #self.ui.Channel1_3.setXRange(0,len(self.data))
+                #self.Channel2(self.ifft,self.time)
                 sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(self.ifft,Fs=2000, Fc=None)
                 plot.savefig('Output1.png', dpi=300, bbox_inches='tight')
                 self.ui.scrollArea_5.setPixmap(QtGui.QPixmap('Output1.png'))
                 os.remove("Output1.png")
           
     def gain(self,slider,sliderValue):
+        #self.ui.Channel1_3.clear
+        self.ui.Channel1_3.removeItem( self.data_line1)
         self.bandsdata[slider] = np.multiply(self.bands[slider], sliderValue)
         #print(self.bandsdata[slider][0])
         flat_list = [item for sublist in self.bandsdata for item in sublist]
@@ -215,36 +220,37 @@ class MainWindow(QtWidgets.QMainWindow):
                self.gaineddata.append(item)
         self.IFFT = np.fft.irfft(self.gaineddata)
         self.sample_length = self.IFFT.shape[0] 
-        self.time = np.arange(self.sample_length) / self.samplerate
+        time = np.arange(self.sample_length) / self.samplerate
         wavio.write("Output.wav", self.IFFT, self.samplerate, sampwidth=1)
-        self.Channel2(self.IFFT,self.time)
+        self.data_line1= self.ui.Channel1_3.plot(time,self.IFFT,pen=self.pen2)
+        #self.Channel2(self.IFFT,self.time)
         sepowerSpectrum, freqenciesFound, time, imageAxis = plot.specgram(self.IFFT,Fs=2000, Fc=None)
         plot.savefig('Output.png', dpi=300, bbox_inches='tight')
         self.ui.scrollArea_5.setPixmap(QtGui.QPixmap('Output.png'))
         os.remove("Output.png")
 
-    def Channel2 (self,ifft,time):
-       self.data_line2 =self.ui.Channel1_3.plot(time,ifft,pen=self.pen2)
-       self.ui.Channel1_3.plotItem.setLimits(xMin =0, xMax=12,yMin=0.6)
-       self.idx2=0
-       self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
-       self.timer2.setInterval(10)
-       self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,ifft))
-       self.timer2.start()
-       self.ui.Channel1_3.show()
-     
-
-  #dating plots and repeating signals 
-    def update_plot_data2(self,data_line,time,data):
-       x = time[:self.idx2]
-       y = data[:self.idx2]  
-       self.idx2 +=10
-       if self.idx2 > len(self.time) :
-           self.idx2 = 0 
-       if  self.time[self.idx2] >0.5:
-           self.ui.Channel1_3.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
-       self.ui.Channel1_3.plotItem.setXRange(max(x,default=0)-0.5 , max(x,default=0))
-       self.data_line2.setData(x,y)
+    #def Channel2 (self,ifft,time):
+    #   self.data_line2 =self.ui.Channel1_3.plot(time,ifft,pen=self.pen2)
+    #   self.ui.Channel1_3.plotItem.setLimits(xMin =0,yMin=0.6)
+    #   self.idx2=0
+    #   self.ui.Channel1_3.plotItem.getViewBox().setAutoPan(x=True,y=True)
+    #   self.timer2.setInterval(10)
+    #   self.timer2.timeout.connect(lambda:self.update_plot_data2(self.data_line2,time,ifft))
+    #   self.timer2.start()
+    #   self.ui.Channel1_3.show()
+    # 
+#
+    ##udating plots and repeating signals 
+    #def update_plot_data2(self,data_line,time,data):
+    #   x = time[:self.idx2]
+    #   y = data[:self.idx2]  
+    #   self.idx2 +=10
+    #   if self.idx2 > len(self.time) :
+    #       self.idx2 = 0 
+    #   if  self.time[self.idx2] >0.5:
+    #       self.ui.Channel1_3.setLimits(xMin =min(x , default=0), xMax=max(x, default=0))
+    #   self.ui.Channel1_3.plotItem.setXRange(max(x,default=0)-0.5 , max(x,default=0))
+    #   self.data_line2.setData(x,y)
 
 #Input spectro 
     def spectro(self,data):
